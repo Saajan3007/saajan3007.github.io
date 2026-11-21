@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Portfolio</title>
+<title>Saajan – Portfolio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
@@ -98,6 +98,14 @@
   form button { background: var(--accent); color: var(--on-accent); border: 0; padding: .7rem; border-radius: 8px; font-weight: 600; }
   footer { margin: 4rem 0 2rem; color: var(--muted); font-size: .9rem; }
 
+  /* Solid blue buttons, no border */
+  .cta, form button, .filters button.on {
+    background: var(--accent); color: #fff; font-weight: 400; letter-spacing: .02em;
+    border: 0; box-shadow: none; transition: filter .2s;
+  }
+  .filters button.on { padding: calc(.35rem + 1px) calc(1rem + 1px); }
+  .cta:hover, form button:hover, .filters button.on:hover { filter: brightness(1.15); }
+
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto; } }
 </style>
 </head>
@@ -148,18 +156,20 @@
       <input id="name" placeholder="Your name" required>
       <input id="email" type="email" placeholder="Your email" required>
       <textarea id="msg" rows="4" placeholder="Your message" required></textarea>
+      <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
       <button type="submit">Send message</button>
       <small id="status" role="status"></small>
     </form>
   </section>
 
-  <footer>© <span id="year"></span> Your Name · <a href="https://github.com/yourusername" style="color:inherit">GitHub</a></footer>
+  <footer>© <span id="year"></span> Saajan · <a href="https://github.com/yourusername" style="color:inherit">GitHub</a></footer>
 </div>
 
 <script>
   // ===== EDIT THIS SECTION =====
   const MY_EMAIL = "you@email.com";
-  const ROLES = ["web developer", "designer", "problem solver"];
+  const WEB3FORMS_KEY = "PASTE_YOUR_ACCESS_KEY_HERE"; // free key from web3forms.com
+  const ROLES = ["full stack developer", "software developer", "data analyst", "cloud engineer"];
   const PROJECTS = [
     { title: "Weather App", type: "web", desc: "Shows live weather for any city.", live: "#", code: "https://github.com/yourusername/weather-app" },
     { title: "Sales Dashboard", type: "data", desc: "Charts and insights from sales data.", live: "#", code: "https://github.com/yourusername/sales-dashboard" },
@@ -227,12 +237,37 @@
     if (e.isIntersecting) { bars.querySelectorAll("i").forEach(i => i.style.width = i.dataset.w + "%"); o.disconnect(); }
   })).observe(bars);
 
-  // Contact form opens the visitor's email app
-  document.getElementById("form").onsubmit = e => {
+  // Contact form: sends the message straight to your email (via Web3Forms)
+  document.getElementById("form").onsubmit = async e => {
     e.preventDefault();
+    const form = e.target, btn = form.querySelector("button"), status = document.getElementById("status");
     const n = document.getElementById("name").value, em = document.getElementById("email").value, m = document.getElementById("msg").value;
-    location.href = `mailto:${MY_EMAIL}?subject=${encodeURIComponent("Portfolio message from " + n)}&body=${encodeURIComponent(m + "\n\nReply to: " + em)}`;
-    document.getElementById("status").textContent = "Opening your email app…";
+
+    // Fallback until you add your access key: opens the visitor's email app
+    if (WEB3FORMS_KEY.startsWith("PASTE")) {
+      location.href = `mailto:${MY_EMAIL}?subject=${encodeURIComponent("Portfolio message from " + n)}&body=${encodeURIComponent(m + "\n\nReply to: " + em)}`;
+      status.textContent = "Opening your email app…";
+      return;
+    }
+
+    btn.disabled = true; btn.textContent = "Sending…"; status.textContent = "";
+    try {
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY, name: n, email: em, message: m,
+          subject: "New portfolio message from " + n,
+          botcheck: form.elements.botcheck.checked
+        })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) { status.textContent = "Message sent. Thank you!"; form.reset(); }
+      else throw new Error(data.message || "Failed");
+    } catch (err) {
+      status.textContent = "Could not send your message. Please try again or email " + MY_EMAIL + ".";
+    }
+    btn.disabled = false; btn.textContent = "Send message";
   };
 
   document.getElementById("year").textContent = new Date().getFullYear();
