@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,34 +8,58 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #f2e8d0; --surface: #f9f2e0; --text: #2b2a22; --muted: #6f6a58;
-    --accent: #0a7a54; --on-accent: #ffffff; --line: #d9ccaa;
+    --bg: #040a1a; --surface: #0a1530; --text: #e8eefc; --muted: #8b9bbd;
+    --accent: #3b82f6; --on-accent: #04122e; --line: #1b2a4d;
+    --glow: 37,99,235;
   }
-  :root[data-theme="dark"] {
-    --bg: #1c1a14; --surface: #26231a; --text: #f1e9d4; --muted: #a8a088;
-    --accent: #34d399; --on-accent: #0b2a1f; --line: #3a3627;
+  :root[data-theme="light"] {
+    --bg: #eaf0fb; --surface: #ffffff; --text: #0b1633; --muted: #52617f;
+    --accent: #1d4ed8; --on-accent: #ffffff; --line: #c5d1ea;
+    --glow: 59,130,246;
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body {
-    margin: 0; background: var(--bg); color: var(--text);
+    margin: 0; color: var(--text);
     font-family: "Bricolage Grotesque", system-ui, sans-serif; line-height: 1.6;
-    transition: background .3s, color .3s;
+    background:
+      radial-gradient(ellipse 55% 40% at 50% 12%, rgba(var(--glow),.32), transparent 70%),
+      radial-gradient(ellipse 80% 30% at 50% 105%, rgba(var(--glow),.24), transparent 70%),
+      var(--bg);
+    background-attachment: fixed;
   }
-  .wrap { max-width: 880px; margin: 0 auto; padding: 0 1.25rem; }
-  nav { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 0; }
-  nav a { color: var(--text); text-decoration: none; margin-right: 1.25rem; }
+  body::after {
+    content: ""; position: fixed; left: 0; right: 0; bottom: 0; height: 200px;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 600 200'%3E%3Cpath fill='%23000' d='M0 200V120h30V90h20V60h10V90h25V70h30v40h20V50h15V20h6V50h14v60h25V80h30v20h20V60h25v50h30V85h20V40h12V15h4v25h14v70h25V95h35v25h30V75h25v55h30v-30h40v100z'/%3E%3C/svg%3E") repeat-x bottom / auto 100%;
+    opacity: .9; pointer-events: none; z-index: 0;
+  }
+  :root[data-theme="light"] body::after { opacity: .12; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 1.25rem 220px; position: relative; z-index: 1; }
+  nav { display: flex; justify-content: center; align-items: center; gap: 3rem; padding: 1.25rem 56px; position: relative; }
+  nav a { color: var(--text); text-decoration: none; letter-spacing: .03em; }
   nav a:hover { color: var(--accent); }
   button { font: inherit; cursor: pointer; }
   #theme {
-    background: none; border: 1px solid var(--line); color: var(--text);
-    border-radius: 999px; padding: .35rem .9rem;
+    position: absolute; right: 0; top: 50%; transform: translateY(-50%);
+    width: 44px; height: 44px; border-radius: 50%; padding: 0;
+    display: grid; place-items: center;
+    background: var(--surface); border: 1px solid var(--line); color: var(--accent);
+    transition: border-color .2s, background .3s;
   }
+  #theme:hover { border-color: var(--accent); }
+  #theme svg { width: 26px; height: auto; fill: currentColor; }
+  @keyframes batspin { from { transform: perspective(160px) rotateY(0deg); } to { transform: perspective(160px) rotateY(360deg); } }
+  #theme.spin svg { animation: batspin .6s ease-in-out 1 both; }
+  @media (max-width: 640px) { nav { gap: 1.1rem; } }
   :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
-  .hero { padding: 4rem 0 3rem; }
-  .hero h1 { font-size: clamp(2.4rem, 8vw, 4.5rem); line-height: 1.05; margin: 0 0 1rem; font-weight: 800; }
-  .hero p { font-size: 1.2rem; color: var(--muted); max-width: 34rem; margin: 0 0 1.5rem; }
+  .hero { padding: 2rem 0 3rem; text-align: center; }
+  .emblem {
+    width: clamp(190px, 42vw, 320px); height: auto; display: block; margin: 0 auto 1.5rem;
+    filter: drop-shadow(0 0 10px rgba(59,130,246,.8)) drop-shadow(0 0 28px rgba(37,99,235,.5));
+  }
+  .hero h1 { font-size: clamp(2.2rem, 7vw, 4rem); line-height: 1.05; margin: 0 0 1rem; font-weight: 800; }
+  .hero p { font-size: 1.2rem; color: var(--muted); max-width: 34rem; margin: 0 auto 1.5rem; }
   #role { color: var(--accent); border-right: 3px solid var(--accent); padding-right: 4px; }
   .cta {
     display: inline-block; background: var(--accent); color: var(--on-accent); text-decoration: none;
@@ -80,11 +104,23 @@
 <body>
 <div class="wrap">
   <nav>
-    <div><a href="#projects">Projects</a><a href="#skills">Skills</a><a href="#contact">Contact</a></div>
-    <button id="theme" aria-label="Switch light or dark theme">Dark mode</button>
+    <a href="#projects">Projects</a><a href="#skills">Skills</a><a href="#contact">Contact</a>
+    <button id="theme" type="button" aria-label="Switch to light theme" title="Switch theme">
+      <svg viewBox="0 0 200 100" aria-hidden="true"><path d="M100 24 L104 10 L108 22 Q116 21 124 25 Q150 6 196 28 Q186 36 188 52 Q178 44 172 58 Q164 48 156 60 Q148 50 138 62 Q126 54 114 68 L100 92 L86 68 Q74 54 62 62 Q52 50 44 60 Q36 48 28 58 Q22 44 12 52 Q14 36 4 28 Q50 6 76 25 Q84 21 92 22 L96 10 Z"/></svg>
+    </button>
   </nav>
 
   <header class="hero">
+    <svg class="emblem" viewBox="0 0 200 100" role="img" aria-label="Bat emblem">
+      <defs>
+        <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#8d8d93"/>
+          <stop offset="0.55" stop-color="#2b2b30"/>
+          <stop offset="1" stop-color="#050505"/>
+        </linearGradient>
+      </defs>
+      <path fill="url(#g)" stroke="#9a9aa0" stroke-width="1.2" stroke-linejoin="round" d="M100 24 L104 10 L108 22 Q116 21 124 25 Q150 6 196 28 Q186 36 188 52 Q178 44 172 58 Q164 48 156 60 Q148 50 138 62 Q126 54 114 68 L100 92 L86 68 Q74 54 62 62 Q52 50 44 60 Q36 48 28 58 Q22 44 12 52 Q14 36 4 28 Q50 6 76 25 Q84 21 92 22 L96 10 Z"/>
+    </svg>
     <h1>Hi, I'm Your Name.</h1>
     <p>I'm a <span id="role"></span> who builds things people actually use.</p>
     <a class="cta" href="#projects">See my work</a>
@@ -133,16 +169,21 @@
   const SKILLS = { "HTML & CSS": 90, "JavaScript": 75, "Python": 65, "Git & GitHub": 80 };
   // =============================
 
-  // Theme toggle (remembers choice)
+  // Theme toggle (bat button, remembers choice)
   const root = document.documentElement, themeBtn = document.getElementById("theme");
   function setTheme(t) {
     root.dataset.theme = t;
-    themeBtn.textContent = t === "dark" ? "Light mode" : "Dark mode";
+    themeBtn.setAttribute("aria-label", t === "dark" ? "Switch to light theme" : "Switch to dark theme");
     try { localStorage.setItem("theme", t); } catch (e) {}
   }
   let saved = null; try { saved = localStorage.getItem("theme"); } catch (e) {}
-  setTheme(saved || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"));
-  themeBtn.onclick = () => setTheme(root.dataset.theme === "dark" ? "light" : "dark");
+  setTheme(saved === "light" ? "light" : "dark");
+  themeBtn.onclick = () => {
+    setTheme(root.dataset.theme === "dark" ? "light" : "dark");
+    if (themeBtn.classList.contains("spin")) return;
+    themeBtn.classList.add("spin");
+  };
+  themeBtn.querySelector("svg").addEventListener("animationend", () => themeBtn.classList.remove("spin"));
 
   // Typing role effect
   const roleEl = document.getElementById("role");
