@@ -35,7 +35,21 @@
   }
   :root[data-theme="light"] body::after { opacity: .12; }
   .wrap { max-width: 880px; margin: 0 auto; padding: 0 1.25rem 220px; position: relative; z-index: 1; }
-  nav { display: flex; justify-content: center; align-items: center; gap: 3rem; padding: 1.25rem 56px; position: relative; }
+ nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+    padding: 1.25rem 56px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: var(--bg);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
+}
   nav a { color: var(--text); text-decoration: none; letter-spacing: .03em; }
   nav a:hover { color: var(--accent); }
   button { font: inherit; cursor: pointer; }
